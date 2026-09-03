@@ -1,10 +1,11 @@
-import { Children, useEffect, useRef, useState } from 'react';
+import { Children, useEffect, useMemo, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Nav from '../components/Nav.jsx';
 import Sidebar from '../components/Sidebar.jsx';
 import EmptyState from '../components/EmptyState.jsx';
 import PromptPanel from '../components/PromptPanel.jsx';
+import Lightbox from '../components/Lightbox.jsx';
 import {
   ensureCurrentSession,
   loadSessions,
@@ -26,21 +27,32 @@ function sanitizeText(text) {
 
 // Markdown 自定义渲染：
 // - 链接一律新窗口打开
-// - 独立成段的链接（如互助墙「点击进入」）渲染为 3px 黑框链接块，不再是孤零零一行红字
-const mdComponents = {
-  a: ({ node, ...props }) => <a {...props} target="_blank" rel="noreferrer" />,
-  p: ({ node, children, ...props }) => {
-    const kids = Children.toArray(children);
-    if (kids.length === 1 && kids[0]?.props?.href) {
-      return (
-        <p className="link-block" {...props}>
-          {children}
-        </p>
-      );
-    }
-    return <p {...props}>{children}</p>;
-  },
-};
+// - 独立成段的链接（如互助墙「点击进入」）渲染为 3px 黑框链接块
+// - 图片：懒加载 + 点击唤起全屏灯箱（原图分辨率查看/下载）
+function createMdComponents(onImageClick) {
+  return {
+    a: ({ node, ...props }) => <a {...props} target="_blank" rel="noreferrer" />,
+    img: ({ node, ...props }) => (
+      <img
+        {...props}
+        className="chat-img"
+        loading="lazy"
+        onClick={() => onImageClick({ src: props.src, alt: props.alt })}
+      />
+    ),
+    p: ({ node, children, ...props }) => {
+      const kids = Children.toArray(children);
+      if (kids.length === 1 && kids[0]?.props?.href) {
+        return (
+          <p className="link-block" {...props}>
+            {children}
+          </p>
+        );
+      }
+      return <p {...props}>{children}</p>;
+    },
+  };
+}
 
 // 调用后端代理，流式解析 SSE 并通过回调分发事件
 // 智能体输出为 Markdown：图片以 ![alt](url) 形式内嵌在 answer 文本中，由渲染层就地显示
@@ -109,9 +121,13 @@ export default function Chat() {
   const [adminCode, setAdminCode] = useState('');
   const [unlockError, setUnlockError] = useState(false);
   const [misHint, setMisHint] = useState(false); // 会话时效提示条
+  const [lightbox, setLightbox] = useState(null); // 全屏图片查看 {src, alt}
   const listRef = useRef(null);
   const messagesRef = useRef(messages);
   const inputRef = useRef(null);
+
+  // Markdown 渲染器：带图片点击回调（useMemo 保证引用稳定，避免重渲染）
+  const mdComponents = useMemo(() => createMdComponents(setLightbox), []);
 
   // 一键提示词：填入输入框并聚焦（空态面板和 / 唤起面板共用）
   const pickPrompt = (text) => {
@@ -398,6 +414,11 @@ export default function Chat() {
           </div>
         </main>
       </div>
+
+      {/* 全屏图片灯箱（点图片唤起 / Esc 或点遮罩关闭） */}
+      {lightbox && (
+        <Lightbox src={lightbox.src} alt={lightbox.alt} onClose={() => setLightbox(null)} />
+      )}
     </div>
   );
 }

@@ -366,13 +366,72 @@
   margin: 4px 0;
 }
 
-/* §2.5 气泡内图片：3px 黑框，宽度撑满气泡，直角 */
+/* §2.5 气泡内图片：3px 黑框，宽度撑满气泡，直角；点击唤起全屏灯箱 */
 .bubble .text img {
   display: block;
   width: 100%;
   border: 3px solid var(--ink);
   border-radius: 0;
   margin: 8px 0;
+  cursor: zoom-in;
+}
+
+/* ---------- 全屏图片灯箱 ---------- */
+/* 遮罩：墨黑近全遮；图片以原图分辨率 contain 展示 */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--ink);
+  opacity: 0.97;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: lightbox-in 100ms linear;
+}
+
+@keyframes lightbox-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.97;
+  }
+}
+
+/* 顶栏：下载 / 关闭 按钮（构成主义块式） */
+.lightbox-bar {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  gap: 12px;
+  z-index: 1;
+}
+
+.lightbox-btn {
+  border: 2px solid var(--paper);
+  background: transparent;
+  color: var(--paper);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 16px;
+  cursor: pointer;
+  transition: background 100ms linear, color 100ms linear;
+}
+
+.lightbox-btn:hover {
+  background: var(--red);
+  border-color: var(--red);
+}
+
+/* 图片本体：适配视口，长按可触发手机原生保存 */
+.lightbox-img {
+  max-width: 92vw;
+  max-height: 88vh;
+  object-fit: contain;
+  border: 3px solid var(--paper);
 }
 
 /* 引用：红色左粗边 + 次要文字透明度 */
