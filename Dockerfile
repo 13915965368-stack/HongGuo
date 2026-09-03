@@ -22,5 +22,8 @@ COPY --from=webbuild /build/dist ./web/dist
 
 ENV PORT=3001
 ENV NODE_ENV=production
+# COPY server/ ./ 平铺后 __dirname=/app/src，相对路径 ../../web/dist 会解析到 /web/dist（错误）
+# DIST_DIR 显式指向产物实际位置
+ENV DIST_DIR=/app/web/dist
 EXPOSE 3001
 CMD ["node", "src/index.js"]
