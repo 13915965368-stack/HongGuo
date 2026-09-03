@@ -1,0 +1,6 @@
+# 挡住一切不该进镜像的东西
+**/node_modules
+server/.env
+web/dist
+.git
+.workbuddy
