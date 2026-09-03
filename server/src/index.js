@@ -136,7 +136,10 @@ app.post('/api/chat', async (req, res) => {
 
 // ---------- 静态托管（部署形态）：同端口吐 web/dist + SPA 路由回退 ----------
 // 本地开发仍走 vite dev/preview；此配置供 Webify/容器部署使用
-const distDir = path.resolve(__dirname, '../../web/dist');
+// DIST_DIR 环境变量可覆盖（容器路径不同时用得上）；本地默认走相对路径
+const distDir = process.env.DIST_DIR
+  ? path.resolve(process.env.DIST_DIR)
+  : path.resolve(__dirname, '../../web/dist');
 app.use(express.static(distDir));
 app.get(/^(?!\/api).*/, (req, res) => {
   res.sendFile(path.join(distDir, 'index.html'));
