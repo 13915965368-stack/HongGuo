@@ -1,0 +1,861 @@
+/* ============================================================
+   红果万事屋 · 对话页样式（规范 §2.5 / §2.6 / §3）
+   布局：侧栏 264px + 3px 粗竖线 + 主区（主内容水平 padding 140px）
+   ============================================================ */
+
+.chat-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.chat-page {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ---------- 侧栏（§2.5 当前会话项 / §3 264px） ---------- */
+.sidebar {
+  width: 264px;
+  flex-shrink: 0;
+  background: var(--paper-deep);
+  border-right: 3px solid var(--ink);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+}
+
+/* 侧栏顶部「新对话」：黑底红阴影（§1.5），撑满侧栏 */
+.sidebar .btn-primary {
+  width: 100%;
+  font-size: 13px;
+  padding: 10px 16px;
+}
+
+.session-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* 会话项：透明底 + 2px 黑框（§1.4 细元素）；当前项红底纸字 Bold */
+.session-item {
+  border: 2px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 21px; /* Body-S 13/21 */
+  padding: 9px 12px;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.session-title {
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 相对活跃时间：次要信息用透明度 */
+.session-time {
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 14px;
+  opacity: 0.55;
+}
+
+.session-item.active {
+  background: var(--red);
+  color: var(--paper);
+  font-weight: 700;
+}
+
+.session-item:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ---------- 主区 ---------- */
+.chat-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 140px; /* §1.6 对话页主内容区水平 padding（1440 基准） */
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ---------- 空态能力面板（页面主卡规格：4px 黑框 + --shadow-l） ---------- */
+.empty-panel {
+  margin: auto;
+  width: 100%;
+  max-width: 720px;
+  background: var(--paper-light);
+  border: 4px solid var(--ink);
+  box-shadow: var(--shadow-l);
+  padding: 32px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.empty-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.empty-head h2 {
+  font-size: 20px; /* H3 20 */
+  font-weight: 900;
+  margin: 0;
+}
+
+.empty-intro {
+  font-size: 15px; /* Body-L 15/26 */
+  line-height: 26px;
+  margin: 0;
+}
+
+.prompt-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.prompt-group-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+/* 「需登录」标注：次要信息用透明度，不用灰色 */
+.prompt-note {
+  font-size: 11px;
+  font-weight: 400;
+  opacity: 0.45;
+}
+
+.prompt-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* 一键提示词：§2.2 小徽章按钮规格（3px 黑框 + Bold 12） */
+.prompt-chip {
+  border: 3px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 9px 14px;
+  cursor: pointer;
+  transition: background 100ms linear, color 100ms linear;
+  animation: chip-in 80ms linear backwards;
+}
+
+/* chips 交错入场：每条间隔 40ms */
+.prompt-chip:nth-child(2) {
+  animation-delay: 40ms;
+}
+
+.prompt-chip:nth-child(3) {
+  animation-delay: 80ms;
+}
+
+.prompt-chip:nth-child(4) {
+  animation-delay: 120ms;
+}
+
+@keyframes chip-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.prompt-chip:hover {
+  background: var(--red);
+  color: var(--paper);
+}
+
+/* 信任说明：Caption 12/19 + 透明度次要化 */
+.empty-trust {
+  font-size: 12px;
+  line-height: 19px;
+  margin: 0;
+  opacity: 0.45;
+}
+
+.msg {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  animation: msg-in 100ms linear;
+}
+
+/* 气泡入场：上移 + 淡入（仅新消息触发，key 稳定不会重放） */
+@keyframes msg-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.msg.user {
+  justify-content: flex-end;
+}
+
+/* §2.5 AI 头像：32×32 红方块 + 2px 黑框 + 「红」Bold 14 纸色 */
+.avatar {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  background: var(--red);
+  border: 2px solid var(--ink);
+  color: var(--paper);
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* AI 侧气泡列：气泡 + 常驻提示小字 */
+.bubble-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 620px;
+  min-width: 0;
+}
+
+.bubble-col .bubble {
+  max-width: 100%;
+}
+
+/* 常驻小字：Caption 12/19 + 透明度次要化 */
+.bubble-hint {
+  font-size: 12px;
+  line-height: 19px;
+  color: var(--ink);
+  opacity: 0.45;
+  padding-left: 2px;
+}
+
+/* ---------- §2.5 聊天气泡 ---------- */
+.bubble {
+  max-width: 620px; /* §3 对话流宽度上限 */
+  padding: 16px;
+  border: 3px solid var(--ink);
+  font-size: 14px;
+  line-height: 23px;
+  word-break: break-word;
+}
+
+/* AI 气泡：纸色浮起面 + 黑阴影 */
+.msg.assistant .bubble {
+  background: var(--paper-light);
+  box-shadow: var(--shadow-m);
+}
+
+/* 用户气泡：黑底纸字 + 红阴影，右对齐 */
+.msg.user .bubble {
+  background: var(--ink);
+  color: var(--paper);
+  box-shadow: var(--shadow-red-s);
+}
+
+/* ---------- §2.5 流式光标：3×16 红竖条，跟随文字末尾 ---------- */
+.cursor {
+  display: inline-block;
+  width: 3px;
+  height: 16px;
+  background: var(--red);
+  vertical-align: -2px;
+  animation: cursor-blink 1s infinite;
+}
+
+@keyframes cursor-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ---------- Markdown 渲染元素（§5 留白 → 沿用气泡规格） ---------- */
+.bubble .text {
+  line-height: 23px;
+}
+
+.bubble .text > :first-child {
+  margin-top: 0;
+}
+
+.bubble .text > :last-child {
+  margin-bottom: 0;
+}
+
+.bubble .text p {
+  margin: 6px 0;
+}
+
+/* 标题只用 Bold（§1.3 规则） */
+.bubble .text h1,
+.bubble .text h2,
+.bubble .text h3,
+.bubble .text h4,
+.bubble .text h5,
+.bubble .text h6 {
+  margin: 12px 0 6px;
+  font-weight: 700;
+}
+
+.bubble .text h1,
+.bubble .text h2 {
+  font-size: 20px; /* H3 20 */
+}
+
+.bubble .text h3,
+.bubble .text h4,
+.bubble .text h5,
+.bubble .text h6 {
+  font-size: 15px;
+}
+
+.bubble .text ul,
+.bubble .text ol {
+  margin: 6px 0;
+  padding-left: 20px;
+}
+
+.bubble .text li {
+  margin: 4px 0;
+}
+
+/* §2.5 气泡内图片：3px 黑框，宽度撑满气泡，直角 */
+.bubble .text img {
+  display: block;
+  width: 100%;
+  border: 3px solid var(--ink);
+  border-radius: 0;
+  margin: 8px 0;
+}
+
+/* 引用：红色左粗边 + 次要文字透明度 */
+.bubble .text blockquote {
+  margin: 8px 0;
+  padding: 4px 12px;
+  border-left: 3px solid var(--red);
+  opacity: 0.85;
+}
+
+/* 行内代码：纸深色底，直角 */
+.bubble .text code {
+  background: var(--paper-deep);
+  color: var(--ink);
+  padding: 1px 5px;
+  font-size: 13px;
+  border-radius: 0;
+}
+
+/* 代码块：墨黑底纸色字 + 黑硬阴影 */
+.bubble .text pre {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 12px;
+  overflow-x: auto;
+  border-radius: 0;
+  box-shadow: var(--shadow-s);
+}
+
+.bubble .text pre code {
+  background: none;
+  color: inherit;
+  padding: 0;
+}
+
+/* 表格：2px 黑框 + 表头纸深色 */
+.bubble .text table {
+  border-collapse: collapse;
+  margin: 8px 0;
+  width: 100%;
+}
+
+.bubble .text th,
+.bubble .text td {
+  border: 2px solid var(--ink);
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.bubble .text th {
+  background: var(--paper-deep);
+  font-weight: 700;
+}
+
+/* 链接：苏维埃红 + 下划线 + Bold */
+.bubble .text a {
+  color: var(--red);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+/* 独立成段的链接 → 3px 黑框链接块（如互助墙「点击进入」） */
+.bubble .text p.link-block {
+  margin: 10px 0;
+}
+
+.bubble .text p.link-block a {
+  display: block;
+  border: 3px solid var(--ink);
+  background: var(--paper);
+  color: var(--red);
+  font-weight: 700;
+  text-decoration: none;
+  padding: 10px 14px;
+  box-shadow: var(--shadow-s);
+  transition: transform 100ms linear, box-shadow 100ms linear;
+  word-break: break-all;
+}
+
+.bubble .text p.link-block a:hover {
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 var(--ink);
+}
+
+/* 分隔线：2px 墨黑实色条（§1.4 分隔线规格） */
+.bubble .text hr {
+  border: none;
+  height: 2px;
+  background: var(--ink);
+  margin: 12px 0;
+}
+
+/* 用户气泡（黑底）内的 Markdown 反向适配 */
+.msg.user .bubble .text a {
+  color: var(--paper);
+}
+
+.msg.user .bubble .text pre {
+  background: var(--paper-deep);
+  color: var(--ink);
+  box-shadow: none;
+}
+
+/* ---------- 错误与空态 ---------- */
+.error {
+  margin-top: 8px;
+  color: var(--red);
+  font-size: 13px;
+}
+
+/* ---------- 会话时效提示条（空会话/旧会话 → 可能需重新登录 MIS） ---------- */
+.session-hint {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 140px 0;
+  border: 2px solid var(--ink);
+  background: var(--paper-light);
+  padding: 8px 12px;
+  font-size: 12px;
+  line-height: 19px;
+}
+
+.session-hint .mark {
+  width: 10px;
+  height: 10px;
+}
+
+/* ---------- 额度用完：解锁横幅 ---------- */
+.quota-banner {
+  margin: 0 140px;
+  background: var(--paper-light);
+  border: 3px solid var(--ink);
+  box-shadow: var(--shadow-s);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.quota-text {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.quota-text p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 21px;
+}
+
+.quota-row {
+  display: flex;
+  gap: 12px;
+}
+
+.quota-input {
+  flex: 1;
+  border: 3px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 13px;
+  padding: 8px 12px;
+  outline: none;
+  border-radius: 0;
+}
+
+.quota-input::placeholder {
+  color: var(--ink);
+  opacity: 0.45;
+}
+
+.quota-input:focus {
+  border-color: var(--red);
+}
+
+.quota-btn {
+  border: 3px solid var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 20px;
+  cursor: pointer;
+}
+
+.quota-btn:hover {
+  background: var(--red);
+  border-color: var(--red);
+}
+
+.quota-error {
+  margin: 0;
+  font-size: 12px;
+  color: var(--red);
+}
+
+/* ---------- / 唤起的紧凑提示词面板（输入条上方） ---------- */
+.prompt-panel {
+  margin: 0 140px;
+  background: var(--paper-light);
+  border: 3px solid var(--ink);
+  box-shadow: var(--shadow-m);
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 40vh;
+  overflow-y: auto;
+}
+
+.prompt-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.prompt-panel-title {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.prompt-panel-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  padding: 0;
+}
+
+.prompt-panel-close:hover {
+  background: var(--red);
+  color: var(--paper);
+}
+
+.prompt-panel-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.prompt-panel-label {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 28px;
+  white-space: nowrap;
+}
+
+.prompt-panel-group .mark {
+  margin-top: 8px;
+}
+
+.prompt-panel-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* 紧凑版提示词 chip（比空态面板小一号） */
+.prompt-chip-s {
+  padding: 5px 10px;
+  border-width: 2px;
+}
+
+/* ---------- §2.6 输入区 ---------- */
+.input-bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 16px 140px;
+  border-top: 2px solid var(--ink); /* 顶部 2px 粗黑分隔线 */
+  flex-shrink: 0;
+}
+
+.input-bar textarea {
+  flex: 1;
+  resize: none;
+  background: var(--paper-light);
+  border: 3px solid var(--ink);
+  border-radius: 0;
+  box-shadow: var(--shadow-s);
+  padding: 10px 12px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink);
+  max-height: 120px;
+  outline: none;
+}
+
+.input-bar textarea::placeholder {
+  color: var(--ink);
+  opacity: 0.45; /* §2.6 占位文字 --ink 45% */
+}
+
+/* 发送键：44×44 红方块 + 3px 黑框 + 纸色箭头 SVG（v2：横扫 + 翻转） */
+.send-btn {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--red);
+  border: 3px solid var(--ink);
+  border-radius: 0;
+  color: var(--paper-light);
+  cursor: pointer;
+  box-shadow: var(--shadow-s);
+  transition: transform 100ms linear, box-shadow 100ms linear, background 100ms linear,
+    color 100ms linear;
+}
+
+.send-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--ink);
+  transform: translateX(-101%);
+  transition: transform 100ms linear;
+  z-index: -1;
+}
+
+.send-btn:hover:not(:disabled) {
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 var(--ink);
+}
+
+.send-btn:hover:not(:disabled)::before {
+  transform: translateX(0);
+}
+
+/* Soviet Reversal：按下红底翻墨底红字，阴影骤归零 */
+.send-btn:active:not(:disabled) {
+  background: var(--ink);
+  color: var(--red);
+  box-shadow: none;
+}
+
+.send-btn:disabled {
+  opacity: 0.45; /* 禁用态用透明度，不引入新颜色 */
+  cursor: not-allowed;
+}
+
+/* 输入区下方常驻安全提示：小锁 + Caption 小字 */
+.input-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 0 140px 10px;
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--ink);
+  opacity: 0.45;
+}
+
+.input-hint svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ---------- 手机端会话条（桌面隐藏） ---------- */
+.chat-mobilebar {
+  display: none;
+}
+
+/* ---------- 响应式 ---------- */
+@media (max-width: 1200px) {
+  .chat-list {
+    padding: 24px 48px;
+  }
+
+  .session-hint {
+    margin: 12px 48px 0;
+  }
+
+  .prompt-panel,
+  .quota-banner {
+    margin: 0 48px;
+  }
+
+  .input-bar {
+    padding: 16px 48px;
+  }
+
+  .input-hint {
+    padding: 0 48px 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  /* 侧栏变抽屉：左侧滑入 + 遮罩 */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 50;
+    width: 264px;
+    transform: translateX(-105%);
+    transition: transform 100ms linear;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .drawer-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--ink);
+    opacity: 0.5;
+    z-index: 45;
+  }
+
+  .chat-mobilebar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    border-bottom: 2px solid var(--ink);
+    flex-shrink: 0;
+  }
+
+  .sessions-btn {
+    border: 2px solid var(--ink);
+    background: var(--paper-light);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 12px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .mobile-session-title {
+    font-size: 12px;
+    opacity: 0.6;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .chat-list {
+    padding: 16px;
+  }
+
+  .session-hint {
+    margin: 12px 16px 0;
+  }
+
+  .prompt-panel,
+  .quota-banner {
+    margin: 0 16px;
+  }
+
+  .input-bar {
+    padding: 12px 16px;
+  }
+
+  .input-hint {
+    padding: 0 16px 10px;
+  }
+
+  .empty-panel {
+    padding: 20px;
+    border-width: 3px;
+  }
+
+  .bubble,
+  .bubble-col {
+    max-width: 88%;
+  }
+}

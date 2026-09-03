@@ -1,0 +1,438 @@
+/* ============================================================
+   WY 个人网站 · 构成主义全局样式
+   依据：设计规范/frontend-design-spec.md（§1 Token / §2 组件）
+   铁律：6 色之外无颜色；border-radius 恒 0；阴影 blur 恒 0；
+        无渐变；次要文字 = --ink + 透明度；图标一律 SVG
+   本文件只放：Token / 基础元素 / 共享组件（导航、按钮、徽章）
+   页面级样式见 Home.css / Chat.css
+   ============================================================ */
+
+/* ---------- §1 设计 Token ---------- */
+:root {
+  /* §1.1 颜色（全站仅这 6 个色值） */
+  --paper: #f2e8d5; /* 页面主背景（泛黄纸色） */
+  --paper-deep: #eae0c9; /* 次级背景：侧栏、卡片预览区 */
+  --paper-light: #f8f2e4; /* 浮起面：卡片、气泡、输入框 */
+  --ink: #1a1a1a; /* 文字、边框、黑块、页脚 */
+  --red: #cc0000; /* 强调：当前态、头像、发送键、徽章 */
+  --gold: #d4a843; /* 极少量点缀 */
+
+  /* §1.2 字体 */
+  --font-body: "Noto Sans SC", sans-serif;
+  --font-label: "Inter", sans-serif;
+
+  /* §1.5 硬边偏移阴影（blur 恒 0；黑底元素用红阴影，其余黑阴影） */
+  --shadow-s: 4px 4px 0 var(--ink);
+  --shadow-m: 5px 5px 0 var(--ink);
+  --shadow-l: 8px 8px 0 var(--ink);
+  --shadow-red-s: 4px 4px 0 var(--red);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 23px; /* Body 14/23 */
+  background: var(--paper);
+  color: var(--ink);
+}
+
+::selection {
+  background: var(--red);
+  color: var(--paper);
+}
+
+a {
+  color: var(--red);
+}
+
+/* ---------- §2.1 共享导航（v2：墨黑底，冲击力优先） ---------- */
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  height: 64px;
+  padding: 0 64px; /* §1.6 页面级水平 padding */
+  background: var(--ink);
+  border-bottom: 3px solid var(--ink);
+  flex-shrink: 0;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--paper);
+}
+
+.logo-mark {
+  width: 14px;
+  height: 14px;
+  background: var(--red);
+  flex-shrink: 0;
+}
+
+.brand-name {
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+/* 导航标签块化（§1.4 细元素 2px 边框）：当前项红底，其余透明纸框 */
+.nav-link {
+  color: var(--paper);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+  border: 2px solid var(--paper);
+  padding: 4px 12px;
+  transition: background 100ms linear, color 100ms linear;
+}
+
+.nav-link:hover {
+  background: var(--red);
+  border-color: var(--red);
+}
+
+.nav-link.active {
+  background: var(--red);
+  border-color: var(--red);
+  color: var(--paper);
+}
+
+/* 右侧状态标签：2px 纸框 + 8px 红方块点 + Inter Bold 小字 */
+.nav-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 2px solid var(--paper);
+  padding: 5px 10px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--red);
+  flex-shrink: 0;
+}
+
+.status-text {
+  font-family: var(--font-label);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--paper);
+}
+
+/* ---------- §2.2 共享按钮（v2：Block Invasion + Soviet Reversal） ---------- */
+/* 覆盖层横扫：::before 初始 -translateX 藏於左侧，hover 时 100ms linear 扫入 */
+/* 主按钮：墨黑底 + 纸色字 + 红阴影 */
+.btn-primary {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: inline-block;
+  border: none;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 900;
+  padding: 16px 30px;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: var(--shadow-red-s);
+  transition: transform 100ms linear, box-shadow 100ms linear, background 100ms linear,
+    color 100ms linear;
+}
+
+.btn-primary::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--red);
+  transform: translateX(-101%);
+  transition: transform 100ms linear;
+  z-index: -1;
+}
+
+/* 次按钮：透明底 + 3px 黑框 + 墨字（覆盖层为墨黑） */
+.btn-secondary {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: inline-block;
+  border: 3px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 900;
+  padding: 13px 27px; /* 扣掉 3px 边框，与主按钮同高 */
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 100ms linear, box-shadow 100ms linear, background 100ms linear,
+    color 100ms linear;
+}
+
+.btn-secondary::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--ink);
+  transform: translateX(-101%);
+  transition: transform 100ms linear;
+  z-index: -1;
+}
+
+/* Diagonal Aggression：hover 斜向位移（X+Y 同移）+ 阴影缩小 + 覆盖层扫入 */
+.btn-primary:hover {
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 var(--red);
+}
+
+.btn-primary:hover::before {
+  transform: translateX(0);
+}
+
+.btn-secondary:hover {
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 var(--ink);
+  color: var(--paper);
+}
+
+.btn-secondary:hover::before {
+  transform: translateX(0);
+}
+
+/* Soviet Reversal：active 配色翻转 + 阴影骤归零 */
+.btn-primary:active {
+  background: var(--red);
+  color: var(--ink);
+  box-shadow: none;
+}
+
+.btn-secondary:active {
+  background: var(--red);
+  color: var(--ink);
+  box-shadow: none;
+}
+
+/* 小徽章按钮（特性标签）：3px 黑框 + Bold 12 */
+.chip {
+  display: inline-block;
+  border: 3px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 9px 14px;
+}
+
+/* ---------- §2.4 徽章 ---------- */
+/* 红色实心徽章（已上线 LIVE） */
+.badge-live {
+  display: inline-block;
+  background: var(--red);
+  color: var(--paper);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  padding: 4px 10px;
+}
+
+/* 黑框文字标签（UNDER CONSTRUCTION 等）：Inter Bold 9 + 字距 2，无底色 */
+.tag-outline {
+  font-family: var(--font-label);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+/* §2.3 分类小方块（12px 标记，卡片/分组标题旁） */
+.mark {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+
+.mark-red {
+  background: var(--red);
+}
+
+.mark-ink {
+  background: var(--ink);
+}
+
+.mark-gold {
+  background: var(--gold);
+}
+
+/* ---------- 响应式 ---------- */
+@media (max-width: 768px) {
+  .nav {
+    padding: 0 16px;
+    gap: 12px;
+  }
+
+  .nav-links {
+    gap: 8px;
+  }
+
+  .nav-link {
+    font-size: 12px;
+    padding: 3px 8px;
+  }
+
+  .brand-name {
+    font-size: 16px;
+  }
+
+  .nav-status {
+    display: none; /* 小屏收起状态标签，优先保链接 */
+  }
+}
+
+/* ---------- 方向感压版转场（v2） ---------- */
+/* 只覆盖内容区（导航 64px 不参与转场，共享骨架保持稳定） */
+.route-wipe {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 64px;
+  bottom: 0;
+  z-index: 90;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* 单墨块 + 16px 红尾刃：扫入盖旧页 → 全覆盖瞬间换路由 → 扫出揭新页 */
+.wipe-block {
+  position: absolute;
+  inset: 0;
+  background: var(--ink);
+}
+
+.wipe-block::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 16px;
+  background: var(--red);
+}
+
+.route-wipe.forward .wipe-block {
+  animation: wipe-ltr 300ms linear forwards;
+}
+
+.route-wipe.forward .wipe-block::after {
+  left: 0; /* 右行时尾刃在左缘 */
+}
+
+.route-wipe.backward .wipe-block {
+  animation: wipe-rtl 300ms linear forwards;
+}
+
+.route-wipe.backward .wipe-block::after {
+  right: 0; /* 左行时尾刃在右缘 */
+}
+
+@keyframes wipe-ltr {
+  0% {
+    transform: translateX(-101%);
+  }
+  48% {
+    transform: translateX(0);
+  }
+  52% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(101%);
+  }
+}
+
+@keyframes wipe-rtl {
+  0% {
+    transform: translateX(101%);
+  }
+  48% {
+    transform: translateX(0);
+  }
+  52% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-101%);
+  }
+}
+
+/* 新页面内容交错落位：换页挂载后短暂停顿，随墨块揭开时装配出现 */
+.page-enter {
+  animation: page-in 140ms linear 60ms backwards;
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- 细节打磨 ---------- */
+/* 墨黑细滚动条 */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--paper-deep);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ink);
+  border: 2px solid var(--paper-deep);
+}
+
+/* 键盘焦点：红色焦点框（可访问性） */
+:focus-visible {
+  outline: 3px solid var(--red);
+  outline-offset: 2px;
+}
+
+/* 减弱动效偏好：全部关停 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
