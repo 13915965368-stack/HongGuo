@@ -127,6 +127,13 @@ export default function Home() {
             <span className="stat-num">100MS</span>
             <span className="stat-label">动效上限</span>
           </div>
+          {/* 累计访客：不蒜子计数，脚本加载后自动填充（-- 为加载中占位） */}
+          <div className="stat">
+            <span className="stat-num">
+              <span id="busuanzi_value_site_uv">--</span>
+            </span>
+            <span className="stat-label">累计访客</span>
+          </div>
         </section>
       </main>
 
